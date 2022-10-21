@@ -1,10 +1,11 @@
 CREATE Table post(
   id serial PRIMARY KEY,
+  customer_id int,
   name VARCHAR(200),
   description TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  delete_at TIMESTAMP
+  deleted_at TIMESTAMP
 );
 CREATE Table media(
   post_id int REFERENCES post(id),

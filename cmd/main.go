@@ -10,6 +10,7 @@ import (
 	"github.com/Asliddin3/post-servise/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	grpcclient "github.com/Asliddin3/post-servise/service/grpc_client"
 )
 
 func main() {
@@ -26,7 +27,12 @@ func main() {
 	if err != nil {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
-	postService := service.NewPostService(connDb, log)
+
+	grpcClient, err := grpcclient.New(cfg)
+	if err != nil {
+		log.Fatal("error while connect to clients", logger.Error(err))
+	}
+	postService := service.NewPostService(grpcClient,connDb, log)
 	lis, err := net.Listen("tcp", cfg.RPCPort)
 	if err != nil {
 		log.Fatal("Error while listening: %v", logger.Error(err))

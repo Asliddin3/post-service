@@ -22,7 +22,7 @@ update_submodule:
 #   migrate -source file:./migrations/ -database 'postgres://postgres:compos1995@localhost:5432/postgres?sslmode=disable' up
 
 # down-version:
-#   migrate -source file:./migrations/ -database 'postgres://postgres:compos1995@localhost:5432/postgres?sslmode=disable' down
+#   migrate -source file:./migrations/ -database 'postgres://postgres:compos1995@localhost:5432/postdb?sslmode=disable' down
 
 # run:
 # 	go run cmd/main.go

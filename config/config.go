@@ -15,16 +15,18 @@ type Config struct{
 	LogLevel string
 	RPCPort string
 	ReviewServiceHost string
-	ReviewServicePort string
+	ReviewServicePort int
 }
 func Load() Config{
 	c:=Config{}
 	c.Environment=cast.ToString(getOrReturnDefault("ENVIRONMENT","develop"))
 	c.PostgresHost=cast.ToString(getOrReturnDefault("POSTGRES_HOST","localhost"))
 	c.PostgresPort=cast.ToInt(getOrReturnDefault("POSTGRES_PORT",5432))
-	c.PostgresDatabase=cast.ToString(getOrReturnDefault("POSTGRES_DATABASE","postdbdb"))
+	c.PostgresDatabase=cast.ToString(getOrReturnDefault("POSTGRES_DATABASE","postdb"))
 	c.PostgresUser=cast.ToString(getOrReturnDefault("POSTGRES_USER","postgres"))
 	c.PostgresPassword=cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD","compos1995"))
+	c.ReviewServiceHost=cast.ToString(getOrReturnDefault("REVIEW_SERVISE_HOST","localhost"))
+	c.ReviewServicePort=cast.ToInt(getOrReturnDefault("REVIEW_SERVISE_HOST",8840))
 
 	c.LogLevel=cast.ToString(getOrReturnDefault("LOG_LEVEL","debug"))
 

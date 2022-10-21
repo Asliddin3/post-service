@@ -1,23 +1,37 @@
 package grpcClient
 
 import (
-    "github.com/Asliddin3/post-servise/config"
+	"fmt"
+
+	"github.com/Asliddin3/post-servise/config"
+	reviewPB "github.com/Asliddin3/post-servise/genproto/review"
+	"google.golang.org/grpc"
 )
 
 //GrpcClientI ...
-type GrpcClientI interface {
+type ServiceManager struct {
+	conf           config.Config
+	reviewServisce reviewPB.ReviewServiceClient
 }
 
-//GrpcClient ...
-type GrpcClient struct {
-    cfg         config.Config
-    connections map[string]interface{}
+func New(cnfg config.Config) (*ServiceManager, error) {
+	connReview, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", cnfg.ReviewServiceHost, cnfg.ReviewServicePort),
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error while dial product service: host: %s and port: %d",
+			cnfg.ReviewServiceHost, cnfg.ReviewServicePort)
+	}
+
+	serviceManager := &ServiceManager{
+		conf:           cnfg,
+		reviewServisce: reviewPB.NewReviewServiceClient(connReview),
+	}
+
+	return serviceManager, nil
 }
 
-//New ...
-func New(cfg config.Config) (*GrpcClient, error) {
-    return &GrpcClient{
-        cfg: cfg,
-        connections: map[string]interface{}{},
-    }, nil
+func (s *ServiceManager) ReviewService() reviewPB.ReviewServiceClient {
+	return s.reviewServisce
 }

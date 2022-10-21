@@ -5,6 +5,7 @@ import (
 
 	pb "github.com/Asliddin3/post-servise/genproto/post"
 	l "github.com/Asliddin3/post-servise/pkg/logger"
+	grpcclient "github.com/Asliddin3/post-servise/service/grpc_client"
 	"github.com/Asliddin3/post-servise/storage"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
@@ -13,14 +14,24 @@ import (
 
 type PostService struct {
 	storage storage.IStorage
+	client  *grpcclient.ServiceManager
 	logger  l.Logger
 }
 
-func NewPostService(db *sqlx.DB, log l.Logger) *PostService {
+func NewPostService(client *grpcclient.ServiceManager, db *sqlx.DB, log l.Logger) *PostService {
 	return &PostService{
 		storage: storage.NewStoragePg(db),
+		client:  client,
 		logger:  log,
 	}
+}
+func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId) (*pb.ListPostCustomer, error) {
+	customerPosts, err := r.storage.Post().GetPostCustomerId(req)
+	if err != nil {
+		r.logger.Error("error getting customer post", l.Any("error getting customer posts", err))
+		return &pb.ListPostCustomer{}, status.Error(codes.Internal, "something went wrong")
+	}
+	return customerPosts, nil
 }
 
 func (s *PostService) CreatePost(ctx context.Context, req *pb.PostRequest) (*pb.PostResponse, error) {

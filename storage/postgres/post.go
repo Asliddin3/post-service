@@ -16,35 +16,56 @@ func NewPostRepo(db *sqlx.DB) *postRepo {
 func (r *postRepo) GetPost(req *pb.PostId) (*pb.PostResponse, error) {
 	postResp := pb.PostResponse{}
 	err := r.db.QueryRow(
-		`select id,name,description,created_at,updated_at from post  where id=$1`, req.Id,
-	).Scan(&postResp.Id, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt)
+		`select id,customer_id,name,description,created_at,updated_at from post  where id=$1`, req.Id,
+	).Scan(&postResp.Id, &postResp.CustomerId, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt)
 	if err != nil {
 		return &pb.PostResponse{}, err
 	}
-	rows,err:=r.db.Query(
-		`select post_id,name,link,type from media where post_id=$1`,req.Id,
+	rows, err := r.db.Query(
+		`select post_id,name,link,type from media where post_id=$1`, req.Id,
 	)
 	if err != nil {
 		return &pb.PostResponse{}, err
 	}
-	for rows.Next(){
-		medResp:=pb.MediasResponse{}
-		err=rows.Scan(&medResp.PostId,&medResp.Name,&medResp.Link,&medResp.Type)
+	for rows.Next() {
+		medResp := pb.MediasResponse{}
+		err = rows.Scan(&medResp.PostId, &medResp.Name, &medResp.Link, &medResp.Type)
 		if err != nil {
 			return &pb.PostResponse{}, err
 		}
-		postResp.Media=append(postResp.Media, &medResp)
+		postResp.Media = append(postResp.Media, &medResp)
 	}
 
 	return &postResp, nil
 }
 
+func (r *postRepo) GetPostCustomerId(req *pb.CustomerId) (*pb.ListPostCustomer, error) {
+	posts := []*pb.PostResponse{}
+	rows, err := r.db.Query(`
+	 select id,customer_id,name,description,created_at,updated_at from post  where customer_id=$1
+	`, req.Id)
+	if err != nil {
+		return &pb.ListPostCustomer{}, err
+	}
+	for rows.Next() {
+		postResp := pb.PostResponse{}
+		err := rows.Scan(&postResp.Id, &postResp.CustomerId, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt)
+		if err != nil {
+			return &pb.ListPostCustomer{}, err
+		}
+		posts = append(posts, &postResp)
+	}
+	return &pb.ListPostCustomer{
+		Posts: posts,
+	}, nil
+}
+
 func (r *postRepo) CreatePost(req *pb.PostRequest) (*pb.PostResponse, error) {
 	postResp := pb.PostResponse{}
 	err := r.db.QueryRow(`
-	insert into post(name,description)
-	values($1,$2) returning id,name,description,created_at,updated_at
-	`, req.Name, req.Description).Scan(&postResp.Id, &postResp.Name, &postResp.Description,
+	insert into post(customer_id,name,description)
+	values($1,$2,$3) returning id,customer_id,name,description,created_at,updated_at
+	`, req.CustomerId, req.Name, req.Description).Scan(&postResp.Id, &postResp.CustomerId, &postResp.Name, &postResp.Description,
 		&postResp.CreatedAt, &postResp.UpdatedAt)
 	if err != nil {
 		return &pb.PostResponse{}, err

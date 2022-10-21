@@ -1,2 +1,2 @@
-DROP Table post;
 DROP Table media;
+DROP Table post;

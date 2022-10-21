@@ -24,3 +24,4 @@ func NewStoragePg(db *sqlx.DB) *storagePg {
 func (s storagePg) Post() repo.PostStorageI {
 	return s.postRepo
 }
+
