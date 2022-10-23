@@ -16,6 +16,8 @@ type Config struct{
 	RPCPort string
 	ReviewServiceHost string
 	ReviewServicePort int
+	CustomerSericeHost string
+	CustomerSericePort int
 }
 func Load() Config{
 	c:=Config{}
@@ -27,6 +29,8 @@ func Load() Config{
 	c.PostgresPassword=cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD","compos1995"))
 	c.ReviewServiceHost=cast.ToString(getOrReturnDefault("REVIEW_SERVISE_HOST","localhost"))
 	c.ReviewServicePort=cast.ToInt(getOrReturnDefault("REVIEW_SERVISE_HOST",8840))
+	c.CustomerSericeHost=cast.ToString(getOrReturnDefault("CUSTOMER_SERVISE_HOST","localhost"))
+	c.CustomerSericePort=cast.ToInt(getOrReturnDefault("CUSTOMER_SERVISE_PORT",8810))
 
 	c.LogLevel=cast.ToString(getOrReturnDefault("LOG_LEVEL","debug"))
 

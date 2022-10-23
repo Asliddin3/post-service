@@ -27,6 +27,45 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type Empty struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Empty) Reset()         { *m = Empty{} }
+func (m *Empty) String() string { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()    {}
+func (*Empty) Descriptor() ([]byte, []int) {
+	return fileDescriptor_63b26697b52db059, []int{0}
+}
+func (m *Empty) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Empty) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Empty.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Empty) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Empty.Merge(m, src)
+}
+func (m *Empty) XXX_Size() int {
+	return m.Size()
+}
+func (m *Empty) XXX_DiscardUnknown() {
+	xxx_messageInfo_Empty.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Empty proto.InternalMessageInfo
+
 type PostReview struct {
 	Review               float32  `protobuf:"fixed32,1,opt,name=review,proto3" json:"review"`
 	Count                int64    `protobuf:"varint,2,opt,name=count,proto3" json:"count"`
@@ -39,7 +78,7 @@ func (m *PostReview) Reset()         { *m = PostReview{} }
 func (m *PostReview) String() string { return proto.CompactTextString(m) }
 func (*PostReview) ProtoMessage()    {}
 func (*PostReview) Descriptor() ([]byte, []int) {
-	return fileDescriptor_63b26697b52db059, []int{0}
+	return fileDescriptor_63b26697b52db059, []int{1}
 }
 func (m *PostReview) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -93,7 +132,7 @@ func (m *PostId) Reset()         { *m = PostId{} }
 func (m *PostId) String() string { return proto.CompactTextString(m) }
 func (*PostId) ProtoMessage()    {}
 func (*PostId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_63b26697b52db059, []int{1}
+	return fileDescriptor_63b26697b52db059, []int{2}
 }
 func (m *PostId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -133,7 +172,7 @@ type Review struct {
 	PostId               int64    `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id"`
 	CustomerId           int64    `protobuf:"varint,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id"`
 	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description"`
-	Review               int64    `protobuf:"varint,4,opt,name=review,proto3" json:"review"`
+	Review               float32  `protobuf:"fixed32,4,opt,name=review,proto3" json:"review"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -143,7 +182,7 @@ func (m *Review) Reset()         { *m = Review{} }
 func (m *Review) String() string { return proto.CompactTextString(m) }
 func (*Review) ProtoMessage()    {}
 func (*Review) Descriptor() ([]byte, []int) {
-	return fileDescriptor_63b26697b52db059, []int{2}
+	return fileDescriptor_63b26697b52db059, []int{3}
 }
 func (m *Review) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -193,7 +232,7 @@ func (m *Review) GetDescription() string {
 	return ""
 }
 
-func (m *Review) GetReview() int64 {
+func (m *Review) GetReview() float32 {
 	if m != nil {
 		return m.Review
 	}
@@ -201,6 +240,7 @@ func (m *Review) GetReview() int64 {
 }
 
 func init() {
+	proto.RegisterType((*Empty)(nil), "review.Empty")
 	proto.RegisterType((*PostReview)(nil), "review.PostReview")
 	proto.RegisterType((*PostId)(nil), "review.PostId")
 	proto.RegisterType((*Review)(nil), "review.Review")
@@ -209,23 +249,25 @@ func init() {
 func init() { proto.RegisterFile("review/review.proto", fileDescriptor_63b26697b52db059) }
 
 var fileDescriptor_63b26697b52db059 = []byte{
-	// 254 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x90, 0xb1, 0x4e, 0xc3, 0x30,
-	0x10, 0x86, 0x71, 0x02, 0x46, 0xbd, 0x42, 0x85, 0x0c, 0x82, 0xa8, 0x43, 0x88, 0x32, 0x65, 0x4a,
-	0x25, 0xd8, 0x18, 0x61, 0x40, 0xd9, 0x90, 0x79, 0x00, 0x04, 0xf1, 0x0d, 0x1e, 0xa8, 0x2d, 0xe7,
-	0x5a, 0x16, 0x1e, 0x84, 0x47, 0x62, 0xe4, 0x11, 0x50, 0x78, 0x11, 0xd4, 0x9c, 0x2b, 0x45, 0x99,
-	0xac, 0xef, 0xbf, 0xfb, 0x7f, 0xdf, 0x1d, 0x9c, 0x07, 0xdc, 0x5a, 0xfc, 0x58, 0xf1, 0x53, 0xfb,
-	0xe0, 0xc8, 0x29, 0xc9, 0x54, 0xde, 0x01, 0x3c, 0xb9, 0x8e, 0xf4, 0x40, 0xea, 0x12, 0xa2, 0x9e,
-	0x89, 0x42, 0x54, 0x89, 0x8e, 0xa4, 0x2e, 0xe0, 0xa8, 0x75, 0x9b, 0x35, 0x65, 0x49, 0x21, 0xaa,
-	0x54, 0x33, 0x94, 0x19, 0xc8, 0x9d, 0xb7, 0x31, 0x6a, 0x01, 0x49, 0x63, 0x06, 0x4f, 0xaa, 0x93,
-	0xc6, 0x94, 0x9f, 0x20, 0x63, 0xe2, 0x15, 0x1c, 0x7b, 0xd7, 0xd1, 0x8b, 0xdd, 0x97, 0xa5, 0x67,
-	0xcb, 0x35, 0xcc, 0xdb, 0x4d, 0x47, 0xee, 0x1d, 0xc3, 0xae, 0xc8, 0xc1, 0xb0, 0x97, 0x1a, 0xa3,
-	0x0a, 0x98, 0x1b, 0xec, 0xda, 0x60, 0x3d, 0x59, 0xb7, 0xce, 0xd2, 0x42, 0x54, 0x33, 0x3d, 0x96,
-	0x46, 0xd3, 0x1e, 0x72, 0x34, 0xd3, 0x8d, 0x87, 0x53, 0xfe, 0xfd, 0x19, 0xc3, 0xd6, 0xb6, 0xa8,
-	0x6a, 0x38, 0x79, 0x08, 0xf8, 0x4a, 0x18, 0x87, 0x5a, 0xd4, 0xf1, 0x16, 0xcc, 0xcb, 0x09, 0xab,
-	0x15, 0xcc, 0x1e, 0x91, 0xa6, 0xcd, 0xbc, 0xeb, 0x52, 0x8d, 0x99, 0x7b, 0xee, 0xcf, 0xbe, 0xfb,
-	0x5c, 0xfc, 0xf4, 0xb9, 0xf8, 0xed, 0x73, 0xf1, 0xf5, 0x97, 0x1f, 0xbc, 0xc9, 0xe1, 0xcc, 0xb7,
-	0xff, 0x01, 0x00, 0x00, 0xff, 0xff, 0x74, 0xc0, 0xf9, 0x6e, 0x7d, 0x01, 0x00, 0x00,
+	// 283 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2e, 0x4a, 0x2d, 0xcb,
+	0x4c, 0x2d, 0xd7, 0x87, 0x50, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0x6c, 0x10, 0x9e, 0x12,
+	0x3b, 0x17, 0xab, 0x6b, 0x6e, 0x41, 0x49, 0xa5, 0x92, 0x15, 0x17, 0x57, 0x40, 0x7e, 0x71, 0x49,
+	0x10, 0x58, 0x58, 0x48, 0x8c, 0x0b, 0xaa, 0x40, 0x82, 0x51, 0x81, 0x51, 0x83, 0x29, 0x08, 0xca,
+	0x13, 0x12, 0xe1, 0x62, 0x4d, 0xce, 0x2f, 0xcd, 0x2b, 0x91, 0x60, 0x52, 0x60, 0xd4, 0x60, 0x0e,
+	0x82, 0x70, 0x94, 0x24, 0xb8, 0xd8, 0x40, 0x7a, 0x3d, 0x53, 0x84, 0xf8, 0xb8, 0x98, 0x3c, 0x53,
+	0xc0, 0x7a, 0x98, 0x83, 0x98, 0x3c, 0x53, 0x94, 0x6a, 0xb8, 0xd8, 0xa0, 0x26, 0x8a, 0x73, 0xb1,
+	0x17, 0xe4, 0x17, 0x97, 0xc4, 0x67, 0xc2, 0xa4, 0xd9, 0x0a, 0x20, 0x5a, 0xe4, 0xb9, 0xb8, 0x93,
+	0x4b, 0x8b, 0x4b, 0xf2, 0x73, 0x53, 0x8b, 0x40, 0x92, 0x10, 0x83, 0xb9, 0x60, 0x42, 0x9e, 0x29,
+	0x42, 0x0a, 0x5c, 0xdc, 0x29, 0xa9, 0xc5, 0xc9, 0x45, 0x99, 0x05, 0x25, 0x99, 0xf9, 0x79, 0x12,
+	0xcc, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0xc8, 0x42, 0x48, 0xae, 0x65, 0x41, 0x76, 0xad, 0xd1, 0x62,
+	0x46, 0x2e, 0x5e, 0x88, 0xf5, 0xc1, 0xa9, 0x45, 0x65, 0x99, 0xc9, 0xa9, 0x42, 0x7a, 0x5c, 0x3c,
+	0xce, 0x45, 0xa9, 0x89, 0x25, 0xa9, 0x50, 0x57, 0xf1, 0xe9, 0x41, 0x43, 0x05, 0xc2, 0x97, 0x42,
+	0xe3, 0x0b, 0x19, 0x73, 0xf1, 0xba, 0xa7, 0x96, 0x20, 0x05, 0x0c, 0x5c, 0x01, 0xc4, 0xc3, 0x52,
+	0x42, 0xc8, 0x7c, 0xa8, 0x1a, 0x5d, 0x2e, 0x1e, 0x97, 0xd4, 0x9c, 0x54, 0x4c, 0x4b, 0xa0, 0x7a,
+	0x78, 0x61, 0x7c, 0x70, 0xc8, 0x3b, 0x09, 0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3,
+	0x83, 0x47, 0x72, 0x8c, 0x33, 0x1e, 0xcb, 0x31, 0x24, 0xb1, 0x81, 0xe3, 0xc8, 0x18, 0x10, 0x00,
+	0x00, 0xff, 0xff, 0x46, 0x6e, 0x84, 0x97, 0xba, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -241,7 +283,8 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ReviewServiceClient interface {
 	CreateReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Review, error)
-	GetReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostReview, error)
+	GetPostReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostReview, error)
+	DeleteReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type reviewServiceClient struct {
@@ -261,9 +304,18 @@ func (c *reviewServiceClient) CreateReview(ctx context.Context, in *Review, opts
 	return out, nil
 }
 
-func (c *reviewServiceClient) GetReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostReview, error) {
+func (c *reviewServiceClient) GetPostReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostReview, error) {
 	out := new(PostReview)
-	err := c.cc.Invoke(ctx, "/review.ReviewService/GetReview", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/GetPostReview", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reviewServiceClient) DeleteReview(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/review.ReviewService/DeleteReview", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +325,8 @@ func (c *reviewServiceClient) GetReview(ctx context.Context, in *PostId, opts ..
 // ReviewServiceServer is the server API for ReviewService service.
 type ReviewServiceServer interface {
 	CreateReview(context.Context, *Review) (*Review, error)
-	GetReview(context.Context, *PostId) (*PostReview, error)
+	GetPostReview(context.Context, *PostId) (*PostReview, error)
+	DeleteReview(context.Context, *PostId) (*Empty, error)
 }
 
 // UnimplementedReviewServiceServer can be embedded to have forward compatible implementations.
@@ -283,8 +336,11 @@ type UnimplementedReviewServiceServer struct {
 func (*UnimplementedReviewServiceServer) CreateReview(ctx context.Context, req *Review) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
 }
-func (*UnimplementedReviewServiceServer) GetReview(ctx context.Context, req *PostId) (*PostReview, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetReview not implemented")
+func (*UnimplementedReviewServiceServer) GetPostReview(ctx context.Context, req *PostId) (*PostReview, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostReview not implemented")
+}
+func (*UnimplementedReviewServiceServer) DeleteReview(ctx context.Context, req *PostId) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteReview not implemented")
 }
 
 func RegisterReviewServiceServer(s *grpc.Server, srv ReviewServiceServer) {
@@ -309,20 +365,38 @@ func _ReviewService_CreateReview_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ReviewService_GetReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ReviewService_GetPostReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PostId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReviewServiceServer).GetReview(ctx, in)
+		return srv.(ReviewServiceServer).GetPostReview(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/review.ReviewService/GetReview",
+		FullMethod: "/review.ReviewService/GetPostReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).GetReview(ctx, req.(*PostId))
+		return srv.(ReviewServiceServer).GetPostReview(ctx, req.(*PostId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReviewService_DeleteReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).DeleteReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/review.ReviewService/DeleteReview",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).DeleteReview(ctx, req.(*PostId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -336,12 +410,43 @@ var _ReviewService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ReviewService_CreateReview_Handler,
 		},
 		{
-			MethodName: "GetReview",
-			Handler:    _ReviewService_GetReview_Handler,
+			MethodName: "GetPostReview",
+			Handler:    _ReviewService_GetPostReview_Handler,
+		},
+		{
+			MethodName: "DeleteReview",
+			Handler:    _ReviewService_DeleteReview_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "review/review.proto",
+}
+
+func (m *Empty) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Empty) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Empty) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *PostReview) Marshal() (dAtA []byte, err error) {
@@ -439,9 +544,10 @@ func (m *Review) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Review != 0 {
-		i = encodeVarintReview(dAtA, i, uint64(m.Review))
+		i -= 4
+		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Review))))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x25
 	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
@@ -474,6 +580,18 @@ func encodeVarintReview(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *Empty) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *PostReview) Size() (n int) {
 	if m == nil {
 		return 0
@@ -524,7 +642,7 @@ func (m *Review) Size() (n int) {
 		n += 1 + l + sovReview(uint64(l))
 	}
 	if m.Review != 0 {
-		n += 1 + sovReview(uint64(m.Review))
+		n += 5
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -537,6 +655,57 @@ func sovReview(x uint64) (n int) {
 }
 func sozReview(x uint64) (n int) {
 	return sovReview(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Empty) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowReview
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Empty: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Empty: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipReview(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthReview
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *PostReview) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -789,24 +958,16 @@ func (m *Review) Unmarshal(dAtA []byte) error {
 			m.Description = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
-			if wireType != 0 {
+			if wireType != 5 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Review", wireType)
 			}
-			m.Review = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowReview
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Review |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
+			var v uint32
+			if (iNdEx + 4) > l {
+				return io.ErrUnexpectedEOF
 			}
+			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
+			iNdEx += 4
+			m.Review = float32(math.Float32frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipReview(dAtA[iNdEx:])

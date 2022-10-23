@@ -8,11 +8,13 @@ import (
 
 type IStorage interface {
 	Post() repo.PostStorageI
+	Review() repo.ReviewStorageI
 }
 
 type storagePg struct {
-	db       *sqlx.DB
-	postRepo repo.PostStorageI
+	db         *sqlx.DB
+	postRepo   repo.PostStorageI
+	reviewRepo repo.ReviewStorageI
 }
 
 func NewStoragePg(db *sqlx.DB) *storagePg {
@@ -25,3 +27,6 @@ func (s storagePg) Post() repo.PostStorageI {
 	return s.postRepo
 }
 
+func (s storagePg) Review() repo.ReviewStorageI {
+	return s.reviewRepo
+}

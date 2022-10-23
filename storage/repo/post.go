@@ -9,6 +9,8 @@ type PostStorageI interface {
 	CreatePost(*pb.PostRequest) (*pb.PostResponse, error)
 	DeletePost(*pb.PostId) (*pb.Empty, error)
 	UpdatePost(*pb.PostResponse) (*pb.PostResponse, error)
-	GetPost(*pb.PostId) (*pb.PostResponse, error)
+	GetPost(*pb.PostId) (*pb.PostResponseCustomer, error)
 	GetPostCustomerId(*pb.CustomerId) (*pb.ListPostCustomer, error)
+	GetListPosts(*pb.Empty) (*pb.ListAllPostResponse, error)
+	DeletePostByCustomerId(*pb.CustomerId) (*pb.DeletedReview, error)
 }
