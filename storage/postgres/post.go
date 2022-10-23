@@ -54,6 +54,9 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 	rows, err := r.db.Query(`
 	select id,deleted_at from post where deleted_at is not null
 	`)
+	if err != nil {
+		return &pb.ListAllPostResponse{}, err
+	}
 	deletedPost := make(map[int]string)
 	for rows.Next() {
 		var id int
@@ -162,6 +165,9 @@ func (r *postRepo) UpdatePost(req *pb.PostResponse) (*pb.PostResponse, error) {
 	`, req.Name, req.Description, req.Id).Scan(
 		&postResp.Id, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt,
 	)
+	if err != nil {
+		return &pb.PostResponse{}, err
+	}
 	_, err = r.db.Exec(`
 	delete from media where post_id=$1
 	`, req.Id)
