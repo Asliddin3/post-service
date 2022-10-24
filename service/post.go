@@ -30,6 +30,31 @@ func NewPostService(client *grpcclient.ServiceManager, db *sqlx.DB, log l.Logger
 }
 func (r *PostService) GetListPosts(ctx context.Context, req *pb.Empty) (*pb.ListAllPostResponse, error) {
 	postsInfo, err := r.storage.Post().GetListPosts(req)
+	for _, post := range postsInfo.ActivePost {
+		reviewInfo, err := r.client.ReviewService().GetPostOverall(context.Background(), &review.PostId{Id: post.Id})
+		if err != nil {
+			r.logger.Error("error getting post review post", l.Any("error getting review", err))
+			return &pb.ListAllPostResponse{}, status.Error(codes.Internal, "something went wrong")
+		}
+		post.Count = reviewInfo.Count
+		post.Overall = reviewInfo.OveralReview
+		reviewsInfo, err := r.client.ReviewService().GetPostReviews(context.Background(), &review.PostId{Id: post.Id})
+		if err != nil {
+			r.logger.Error("error getting review info", l.Any("eror getting review info", err))
+			return &pb.ListAllPostResponse{}, status.Error(codes.Internal, "something went wrong")
+		}
+		for _, reviewResp := range reviewsInfo.Reviews {
+			reivewRes := pb.ReviewRespList{
+				FirstName:   reviewResp.FirstName,
+				LastName:    reviewResp.LastName,
+				Description: reviewResp.Description,
+				Id:          reviewResp.Id,
+				Review:      reviewResp.Review,
+				CustomerId:  reviewResp.CustomerId,
+			}
+			post.Reviews = append(post.Reviews, &reivewRes)
+		}
+	}
 	if err != nil {
 		r.logger.Error("error getting all posts", l.Any("error getting  all posts", err))
 		return &pb.ListAllPostResponse{}, status.Error(codes.Internal, "something went wrong")
@@ -44,7 +69,7 @@ func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId)
 		return &pb.ListPostCustomer{}, status.Error(codes.Internal, "something went wrong")
 	}
 	for i, post := range customerPosts.Posts {
-		postReview, err := r.client.ReviewService().GetPostReview(context.Background(), &review.PostId{Id: post.Id})
+		postReview, err := r.client.ReviewService().GetPostOverall(context.Background(), &review.PostId{Id: post.Id})
 
 		if err != nil {
 			r.logger.Error("error getting post by customer", l.Any("error getting post reivew", err))

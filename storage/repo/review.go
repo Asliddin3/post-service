@@ -5,6 +5,7 @@ import (
 )
 
 type ReviewStorageI interface {
-	GetPostReview(*pb.PostId) (*pb.PostReview, error)
+	GetPostOverall(*pb.PostId) (*pb.PostReview, error)
 	DeleteReview(*pb.PostId) (*pb.Empty, error)
+	GetPostReviews(*pb.PostId) (*pb.ReviewsList, error)
 }
