@@ -1,4 +1,4 @@
-CREATE Table post(
+CREATE Table if not exists post(
   id serial PRIMARY KEY,
   customer_id int,
   name VARCHAR(200),
@@ -7,7 +7,8 @@ CREATE Table post(
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMP
 );
-CREATE Table media(
+CREATE Table if NOT exists media(
+  id serial PRIMARY KEY,
   post_id int REFERENCES post(id),
   name VARCHAR(100),
   link TEXT,

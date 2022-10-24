@@ -44,7 +44,6 @@ func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId)
 		return &pb.ListPostCustomer{}, status.Error(codes.Internal, "something went wrong")
 	}
 	for i, post := range customerPosts.Posts {
-		// postReview, err := r.storage.Review().GetPostReview(&review.PostId{Id: post.Id})
 		postReview, err := r.client.ReviewService().GetPostReview(context.Background(), &review.PostId{Id: post.Id})
 
 		if err != nil {
@@ -61,8 +60,21 @@ func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId)
 			UpdatedAt:   post.UpdatedAt,
 		}
 		postWithReview.Count = postReview.Count
-		postWithReview.Review = postReview.Review
+		postWithReview.Overall = postReview.OveralReview
 		customerPosts.Posts[i] = &postWithReview
+		reviewsPost, err := r.client.ReviewService().GetPostReviews(context.Background(), &review.PostId{Id: postWithReview.Id})
+		if err != nil {
+			return &pb.ListPostCustomer{}, err
+		}
+		for _, review := range reviewsPost.Reviews {
+			reviewResp := pb.ReviewRespList{
+				Id:          review.Id,
+				CustomerId:  review.CustomerId,
+				Description: review.Description,
+				Review:      review.Review,
+			}
+			postWithReview.Reviews = append(postWithReview.Reviews, &reviewResp)
+		}
 	}
 	return customerPosts, nil
 }

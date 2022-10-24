@@ -100,7 +100,7 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 			fmt.Println(mediaResp)
 		}
 		if val, ok := deletedPost[int(postResp.Id)]; ok {
-			postResp.DeleteAt = val
+			postResp.DeletedAt = val
 			posts.DeletedPost = append(posts.DeletedPost, &postResp)
 		} else {
 			posts.ActivePost = append(posts.ActivePost, &postResp)

@@ -34,6 +34,15 @@ func (r *ReviewService) DeleteReview(ctx context.Context, req *pb.PostId) (*pb.E
 	return &pb.Empty{}, nil
 }
 
+func (r *ReviewService) GetPostReviews(ctx context.Context, req *pb.PostId) (*pb.ReviewsList, error) {
+	reviews, err := r.client.ReviewService().GetPostReviews(context.Background(), req)
+	if err != nil {
+		r.logger.Error("error getting post reviews", l.Any("error getting post reviews", err))
+		return &pb.ReviewsList{}, status.Error(codes.Internal, "something went wrong")
+	}
+	return reviews, nil
+}
+
 func (r *ReviewService) GetPostReview(ctx context.Context, req *pb.PostId) (*pb.PostReview, error) {
 	postReview, err := r.client.ReviewService().GetPostReview(context.Background(), req)
 	if err != nil {

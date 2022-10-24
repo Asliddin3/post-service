@@ -5,6 +5,7 @@ package customer
 
 import (
 	context "context"
+	encoding_binary "encoding/binary"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
@@ -87,13 +88,13 @@ type CustomerFullInfo struct {
 	LastName             string             `protobuf:"bytes,3,opt,name=LastName,proto3" json:"LastName"`
 	Bio                  string             `protobuf:"bytes,4,opt,name=Bio,proto3" json:"Bio"`
 	Adderesses           []*AddressResponse `protobuf:"bytes,5,rep,name=Adderesses,proto3" json:"Adderesses"`
-	Review               []*ReviewResp      `protobuf:"bytes,6,rep,name=review,proto3" json:"review"`
-	Email                string             `protobuf:"bytes,7,opt,name=Email,proto3" json:"Email"`
-	PhoneNumber          string             `protobuf:"bytes,8,opt,name=PhoneNumber,proto3" json:"PhoneNumber"`
-	CreatedAt            string             `protobuf:"bytes,9,opt,name=CreatedAt,proto3" json:"CreatedAt"`
-	UpdatedAt            string             `protobuf:"bytes,10,opt,name=UpdatedAt,proto3" json:"UpdatedAt"`
-	DeletedAt            string             `protobuf:"bytes,11,opt,name=DeletedAt,proto3" json:"DeletedAt"`
-	Posts                []*PostResponse    `protobuf:"bytes,12,rep,name=posts,proto3" json:"posts"`
+	Email                string             `protobuf:"bytes,6,opt,name=Email,proto3" json:"Email"`
+	PhoneNumber          string             `protobuf:"bytes,7,opt,name=PhoneNumber,proto3" json:"PhoneNumber"`
+	CreatedAt            string             `protobuf:"bytes,8,opt,name=CreatedAt,proto3" json:"CreatedAt"`
+	UpdatedAt            string             `protobuf:"bytes,9,opt,name=UpdatedAt,proto3" json:"UpdatedAt"`
+	DeletedAt            string             `protobuf:"bytes,10,opt,name=DeletedAt,proto3" json:"DeletedAt"`
+	Posts                []*PostResponse    `protobuf:"bytes,11,rep,name=Posts,proto3" json:"Posts"`
+	Reviews              []*ReviewList      `protobuf:"bytes,12,rep,name=Reviews,proto3" json:"Reviews"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -167,13 +168,6 @@ func (m *CustomerFullInfo) GetAdderesses() []*AddressResponse {
 	return nil
 }
 
-func (m *CustomerFullInfo) GetReview() []*ReviewResp {
-	if m != nil {
-		return m.Review
-	}
-	return nil
-}
-
 func (m *CustomerFullInfo) GetEmail() string {
 	if m != nil {
 		return m.Email
@@ -216,6 +210,84 @@ func (m *CustomerFullInfo) GetPosts() []*PostResponse {
 	return nil
 }
 
+func (m *CustomerFullInfo) GetReviews() []*ReviewList {
+	if m != nil {
+		return m.Reviews
+	}
+	return nil
+}
+
+type ReviewList struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id"`
+	PostId               int64    `protobuf:"varint,2,opt,name=post_id,json=postId,proto3" json:"post_id"`
+	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description"`
+	Review               float32  `protobuf:"fixed32,4,opt,name=review,proto3" json:"review"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReviewList) Reset()         { *m = ReviewList{} }
+func (m *ReviewList) String() string { return proto.CompactTextString(m) }
+func (*ReviewList) ProtoMessage()    {}
+func (*ReviewList) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f52c63852255b1ea, []int{2}
+}
+func (m *ReviewList) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ReviewList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ReviewList.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ReviewList) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReviewList.Merge(m, src)
+}
+func (m *ReviewList) XXX_Size() int {
+	return m.Size()
+}
+func (m *ReviewList) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReviewList.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReviewList proto.InternalMessageInfo
+
+func (m *ReviewList) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *ReviewList) GetPostId() int64 {
+	if m != nil {
+		return m.PostId
+	}
+	return 0
+}
+
+func (m *ReviewList) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *ReviewList) GetReview() float32 {
+	if m != nil {
+		return m.Review
+	}
+	return 0
+}
+
 type PostResponse struct {
 	Id                   int64             `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	Name                 string            `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
@@ -223,7 +295,6 @@ type PostResponse struct {
 	Media                []*MediasResponse `protobuf:"bytes,4,rep,name=Media,proto3" json:"Media"`
 	CreatedAt            string            `protobuf:"bytes,5,opt,name=CreatedAt,proto3" json:"CreatedAt"`
 	UpdatedAt            string            `protobuf:"bytes,6,opt,name=UpdatedAt,proto3" json:"UpdatedAt"`
-	DeleteAt             string            `protobuf:"bytes,7,opt,name=DeleteAt,proto3" json:"DeleteAt"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -233,7 +304,7 @@ func (m *PostResponse) Reset()         { *m = PostResponse{} }
 func (m *PostResponse) String() string { return proto.CompactTextString(m) }
 func (*PostResponse) ProtoMessage()    {}
 func (*PostResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{2}
+	return fileDescriptor_f52c63852255b1ea, []int{3}
 }
 func (m *PostResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -304,13 +375,6 @@ func (m *PostResponse) GetUpdatedAt() string {
 	return ""
 }
 
-func (m *PostResponse) GetDeleteAt() string {
-	if m != nil {
-		return m.DeleteAt
-	}
-	return ""
-}
-
 type ReviewResp struct {
 	PostId               int64    `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id"`
 	Description          string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description"`
@@ -324,7 +388,7 @@ func (m *ReviewResp) Reset()         { *m = ReviewResp{} }
 func (m *ReviewResp) String() string { return proto.CompactTextString(m) }
 func (*ReviewResp) ProtoMessage()    {}
 func (*ReviewResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{3}
+	return fileDescriptor_f52c63852255b1ea, []int{4}
 }
 func (m *ReviewResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -384,7 +448,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{4}
+	return fileDescriptor_f52c63852255b1ea, []int{5}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -424,7 +488,7 @@ func (m *CustomerId) Reset()         { *m = CustomerId{} }
 func (m *CustomerId) String() string { return proto.CompactTextString(m) }
 func (*CustomerId) ProtoMessage()    {}
 func (*CustomerId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{5}
+	return fileDescriptor_f52c63852255b1ea, []int{6}
 }
 func (m *CustomerId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -471,7 +535,6 @@ type CustomerResponsePost struct {
 	CreatedAt            string             `protobuf:"bytes,8,opt,name=CreatedAt,proto3" json:"CreatedAt"`
 	UpdatedAt            string             `protobuf:"bytes,9,opt,name=UpdatedAt,proto3" json:"UpdatedAt"`
 	Post                 []*PostResponse    `protobuf:"bytes,10,rep,name=Post,proto3" json:"Post"`
-	DeleteAt             string             `protobuf:"bytes,11,opt,name=DeleteAt,proto3" json:"DeleteAt"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -481,7 +544,7 @@ func (m *CustomerResponsePost) Reset()         { *m = CustomerResponsePost{} }
 func (m *CustomerResponsePost) String() string { return proto.CompactTextString(m) }
 func (*CustomerResponsePost) ProtoMessage()    {}
 func (*CustomerResponsePost) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{6}
+	return fileDescriptor_f52c63852255b1ea, []int{7}
 }
 func (m *CustomerResponsePost) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -580,13 +643,6 @@ func (m *CustomerResponsePost) GetPost() []*PostResponse {
 	return nil
 }
 
-func (m *CustomerResponsePost) GetDeleteAt() string {
-	if m != nil {
-		return m.DeleteAt
-	}
-	return ""
-}
-
 type MediasResponse struct {
 	PostId               int64    `protobuf:"varint,1,opt,name=PostId,proto3" json:"PostId"`
 	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
@@ -601,7 +657,7 @@ func (m *MediasResponse) Reset()         { *m = MediasResponse{} }
 func (m *MediasResponse) String() string { return proto.CompactTextString(m) }
 func (*MediasResponse) ProtoMessage()    {}
 func (*MediasResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{7}
+	return fileDescriptor_f52c63852255b1ea, []int{8}
 }
 func (m *MediasResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -678,7 +734,7 @@ func (m *CustomerResponse) Reset()         { *m = CustomerResponse{} }
 func (m *CustomerResponse) String() string { return proto.CompactTextString(m) }
 func (*CustomerResponse) ProtoMessage()    {}
 func (*CustomerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{8}
+	return fileDescriptor_f52c63852255b1ea, []int{9}
 }
 func (m *CustomerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -789,7 +845,7 @@ func (m *Address) Reset()         { *m = Address{} }
 func (m *Address) String() string { return proto.CompactTextString(m) }
 func (*Address) ProtoMessage()    {}
 func (*Address) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{9}
+	return fileDescriptor_f52c63852255b1ea, []int{10}
 }
 func (m *Address) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -845,7 +901,7 @@ func (m *AddressResponse) Reset()         { *m = AddressResponse{} }
 func (m *AddressResponse) String() string { return proto.CompactTextString(m) }
 func (*AddressResponse) ProtoMessage()    {}
 func (*AddressResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{10}
+	return fileDescriptor_f52c63852255b1ea, []int{11}
 }
 func (m *AddressResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -911,7 +967,7 @@ func (m *CustomerRequest) Reset()         { *m = CustomerRequest{} }
 func (m *CustomerRequest) String() string { return proto.CompactTextString(m) }
 func (*CustomerRequest) ProtoMessage()    {}
 func (*CustomerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f52c63852255b1ea, []int{11}
+	return fileDescriptor_f52c63852255b1ea, []int{12}
 }
 func (m *CustomerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -985,6 +1041,7 @@ func (m *CustomerRequest) GetPhonenumber() string {
 func init() {
 	proto.RegisterType((*ListCustomers)(nil), "customer.ListCustomers")
 	proto.RegisterType((*CustomerFullInfo)(nil), "customer.CustomerFullInfo")
+	proto.RegisterType((*ReviewList)(nil), "customer.ReviewList")
 	proto.RegisterType((*PostResponse)(nil), "customer.PostResponse")
 	proto.RegisterType((*ReviewResp)(nil), "customer.ReviewResp")
 	proto.RegisterType((*Empty)(nil), "customer.Empty")
@@ -1000,58 +1057,57 @@ func init() {
 func init() { proto.RegisterFile("customer/customer.proto", fileDescriptor_f52c63852255b1ea) }
 
 var fileDescriptor_f52c63852255b1ea = []byte{
-	// 802 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x56, 0xcd, 0x6e, 0xd3, 0x4a,
-	0x14, 0xbe, 0xb6, 0xf3, 0x7b, 0xd2, 0x9b, 0xe4, 0x8e, 0xa2, 0xd6, 0x8d, 0xaa, 0x28, 0xf2, 0xaa,
-	0xba, 0xaa, 0x7a, 0x75, 0xcb, 0x02, 0x21, 0x81, 0x50, 0xda, 0xd2, 0x10, 0xa9, 0x54, 0x55, 0x4a,
-	0xd7, 0x55, 0x9a, 0x39, 0x15, 0x23, 0x92, 0xd8, 0xd8, 0x93, 0xa2, 0x3e, 0x09, 0x6c, 0x58, 0xf0,
-	0x1c, 0xbc, 0x40, 0x97, 0x3c, 0x00, 0x0b, 0x54, 0x56, 0xbc, 0x05, 0x9a, 0x1f, 0x7b, 0x6c, 0x27,
-	0x4d, 0xb7, 0x48, 0xec, 0xe6, 0x7c, 0xe7, 0x67, 0xce, 0x77, 0xbe, 0xe3, 0x49, 0x60, 0x63, 0x3c,
-	0x8f, 0xb8, 0x3f, 0xc5, 0xf0, 0xbf, 0xf8, 0xb0, 0x1b, 0x84, 0x3e, 0xf7, 0x49, 0x25, 0xb6, 0xbd,
-	0x4f, 0x16, 0xfc, 0x7d, 0xcc, 0x22, 0x7e, 0xa0, 0x81, 0x88, 0x1c, 0x42, 0xa3, 0x37, 0xe6, 0xec,
-	0x1a, 0x13, 0xc8, 0xb5, 0xba, 0xce, 0x76, 0x6d, 0xaf, 0xbd, 0x9b, 0x54, 0x89, 0x5d, 0x47, 0xf3,
-	0xc9, 0x64, 0x30, 0xbb, 0xf2, 0x87, 0xf9, 0x14, 0x72, 0x04, 0xcd, 0x43, 0x9c, 0x20, 0x47, 0x6a,
-	0xca, 0xd8, 0x0f, 0x96, 0x59, 0xc8, 0xf1, 0x3e, 0x38, 0xd0, 0xcc, 0x87, 0x91, 0x3a, 0xd8, 0x03,
-	0xea, 0x5a, 0x5d, 0x6b, 0xdb, 0x19, 0xda, 0x03, 0x4a, 0xb6, 0xa0, 0x7a, 0xc4, 0xc2, 0x88, 0x9f,
-	0x8c, 0xa6, 0xe8, 0xda, 0x5d, 0x6b, 0xbb, 0x3a, 0x34, 0x00, 0x69, 0x43, 0xe5, 0x78, 0xa4, 0x9d,
-	0x8e, 0x74, 0x26, 0x36, 0x69, 0x82, 0xb3, 0xcf, 0x7c, 0xb7, 0x20, 0x61, 0x71, 0x24, 0x4f, 0x00,
-	0x7a, 0x94, 0x62, 0x88, 0x51, 0x84, 0x91, 0x5b, 0x94, 0x2d, 0x6f, 0x9a, 0x96, 0x7b, 0x94, 0x0a,
-	0xd7, 0x10, 0xa3, 0xc0, 0x9f, 0x45, 0x38, 0x4c, 0x05, 0x93, 0x1d, 0x28, 0x85, 0x78, 0xcd, 0xf0,
-	0xbd, 0x5b, 0x92, 0x69, 0x2d, 0x93, 0x36, 0x94, 0xb8, 0xc8, 0x1a, 0xea, 0x18, 0xd2, 0x82, 0xe2,
-	0x8b, 0xe9, 0x88, 0x4d, 0xdc, 0xb2, 0xbc, 0x5c, 0x19, 0xa4, 0x0b, 0xb5, 0xd3, 0x37, 0xfe, 0x0c,
-	0x4f, 0xe6, 0xd3, 0x4b, 0x0c, 0xdd, 0x8a, 0xf4, 0xa5, 0x21, 0x41, 0xf6, 0x20, 0xc4, 0x11, 0x47,
-	0xda, 0xe3, 0x6e, 0x55, 0x91, 0x4d, 0x00, 0xe1, 0x3d, 0x0f, 0xa8, 0xf6, 0x82, 0xf2, 0x26, 0x80,
-	0xf0, 0xea, 0x09, 0xf7, 0xb8, 0x5b, 0x53, 0xde, 0x04, 0x20, 0x3b, 0x50, 0x0c, 0xfc, 0x88, 0x47,
-	0xee, 0x9a, 0x6c, 0x7f, 0xdd, 0xb4, 0x7f, 0xea, 0x47, 0x3c, 0xa1, 0xac, 0x82, 0xbc, 0x6f, 0x16,
-	0xac, 0xa5, 0xf1, 0x05, 0x55, 0x08, 0x14, 0x52, 0x82, 0xc8, 0xb3, 0xa0, 0x77, 0x88, 0xd1, 0x38,
-	0x64, 0x01, 0x67, 0xfe, 0x4c, 0xcb, 0x91, 0x86, 0xc8, 0x2e, 0x14, 0x5f, 0x21, 0x65, 0x23, 0xb7,
-	0x20, 0x9b, 0x70, 0x4d, 0x13, 0x12, 0x36, 0x93, 0x57, 0x61, 0xd9, 0x71, 0x14, 0x57, 0x8e, 0xa3,
-	0x94, 0x1f, 0x47, 0x1b, 0x2a, 0x8a, 0x7d, 0x8f, 0x6b, 0x15, 0x12, 0xdb, 0xbb, 0x00, 0x30, 0xa2,
-	0x91, 0x0d, 0x28, 0x0b, 0xd6, 0x17, 0x2c, 0x26, 0x58, 0x12, 0xe6, 0x80, 0x0a, 0x42, 0x34, 0x45,
-	0x48, 0x71, 0x4d, 0x43, 0x64, 0x3d, 0xd9, 0x0a, 0x47, 0x65, 0x2a, 0xcb, 0x2b, 0x0b, 0xfd, 0x03,
-	0x7e, 0xe3, 0x6d, 0x01, 0xc4, 0x1b, 0x3e, 0xa0, 0x62, 0x8a, 0xc9, 0x25, 0x36, 0xa3, 0xde, 0x4f,
-	0x1b, 0x5a, 0xb1, 0x3b, 0xe6, 0x2e, 0xc6, 0xfe, 0xbb, 0x7e, 0x04, 0xc9, 0x5a, 0x97, 0x56, 0xac,
-	0x75, 0xf9, 0x81, 0xb5, 0xae, 0xac, 0xd4, 0xb1, 0x9a, 0xd7, 0xf1, 0x5f, 0x28, 0x88, 0x91, 0xb8,
-	0xb0, 0x72, 0x6f, 0x65, 0x4c, 0x46, 0xf3, 0x5a, 0x4e, 0x73, 0x0a, 0xf5, 0xec, 0x92, 0x09, 0xf1,
-	0x4e, 0xa5, 0xd0, 0xb1, 0xec, 0xca, 0x5a, 0xba, 0xdb, 0x04, 0x0a, 0xc7, 0x6c, 0xf6, 0x56, 0x8f,
-	0x57, 0x9e, 0x05, 0xf6, 0xfa, 0x26, 0x40, 0x3d, 0x5b, 0x79, 0xf6, 0xbe, 0xd8, 0xe6, 0x49, 0xbb,
-	0xf7, 0xe3, 0xf9, 0x83, 0xd5, 0xcc, 0x3c, 0x52, 0x90, 0x7b, 0xa4, 0xbc, 0x67, 0x50, 0xd6, 0x0d,
-	0x4b, 0x29, 0x59, 0xc4, 0x43, 0x36, 0xe6, 0x72, 0x72, 0x42, 0x4a, 0x6d, 0x0b, 0xe1, 0xce, 0x78,
-	0x88, 0xc8, 0xf5, 0xf0, 0xb4, 0xe5, 0x9d, 0x43, 0x23, 0xc7, 0x37, 0xff, 0xc5, 0x65, 0xca, 0xda,
-	0xf7, 0x96, 0x75, 0x32, 0x65, 0x6f, 0x2d, 0x68, 0x18, 0x4d, 0xdf, 0xcd, 0x31, 0x92, 0x3c, 0xae,
-	0x84, 0x62, 0x33, 0xa1, 0x92, 0xea, 0xcf, 0x00, 0xe2, 0x96, 0xc9, 0x48, 0x3b, 0xf5, 0x2d, 0xb1,
-	0x2d, 0x24, 0xbc, 0x64, 0xbe, 0xbe, 0x42, 0x1c, 0xc9, 0xff, 0x00, 0x23, 0x23, 0xa1, 0x7a, 0x1a,
-	0xff, 0x59, 0x94, 0x30, 0x15, 0x24, 0xa4, 0x43, 0x29, 0x9d, 0x7a, 0x14, 0x95, 0x21, 0xa4, 0x0b,
-	0x84, 0x4e, 0x33, 0x25, 0x9d, 0x92, 0x35, 0x0d, 0xed, 0x7d, 0x76, 0x0c, 0x95, 0x33, 0x0c, 0xaf,
-	0xd9, 0x18, 0x49, 0x1f, 0xea, 0x4a, 0xbd, 0xd8, 0x41, 0x36, 0x17, 0x7f, 0xc5, 0x35, 0xef, 0x76,
-	0x7b, 0x99, 0x4b, 0xcf, 0xfa, 0x39, 0x94, 0xfb, 0xc8, 0xf7, 0x6f, 0x06, 0x94, 0xb4, 0x16, 0xc3,
-	0x06, 0xb4, 0xdd, 0xb9, 0x3f, 0x59, 0x7e, 0xbe, 0x4f, 0xa1, 0xd9, 0x47, 0x9e, 0xfd, 0xc7, 0xd2,
-	0x30, 0x39, 0xf2, 0x45, 0x6d, 0x6f, 0x18, 0x20, 0x1b, 0xf9, 0x18, 0xea, 0x6a, 0x93, 0x12, 0x1e,
-	0xcb, 0xbb, 0xc8, 0x57, 0x24, 0x2f, 0xa1, 0xae, 0x16, 0x34, 0x49, 0x5c, 0xc1, 0x72, 0xe5, 0x04,
-	0x0e, 0xa0, 0xd1, 0xc7, 0xa4, 0x25, 0xf9, 0x77, 0x66, 0x79, 0x0f, 0x2b, 0x8a, 0xec, 0x37, 0x6f,
-	0xef, 0x3a, 0xd6, 0xd7, 0xbb, 0x8e, 0xf5, 0xfd, 0xae, 0x63, 0x7d, 0xfc, 0xd1, 0xf9, 0xeb, 0xb2,
-	0x24, 0xff, 0xd8, 0x3d, 0xfa, 0x15, 0x00, 0x00, 0xff, 0xff, 0xb1, 0x90, 0x9b, 0xdd, 0xf3, 0x09,
-	0x00, 0x00,
+	// 795 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0xcd, 0x6a, 0x1b, 0x49,
+	0x10, 0xde, 0x99, 0xd1, 0x8f, 0x55, 0xf6, 0x4a, 0xda, 0x46, 0xd8, 0x63, 0x61, 0x84, 0x98, 0x93,
+	0x59, 0x16, 0x2d, 0xeb, 0x3d, 0x2c, 0x0b, 0x09, 0x41, 0xb6, 0x62, 0x45, 0xe0, 0x18, 0x33, 0x8e,
+	0xcf, 0x46, 0x56, 0x97, 0x49, 0x13, 0x49, 0x33, 0x99, 0x6e, 0x39, 0xf8, 0x4d, 0x92, 0x43, 0x0e,
+	0x79, 0x8e, 0x5c, 0x72, 0xf4, 0x25, 0x90, 0x47, 0x08, 0xce, 0x8b, 0x84, 0xfe, 0x99, 0xe9, 0xd1,
+	0x8f, 0x95, 0x17, 0xf0, 0xad, 0xeb, 0xab, 0xea, 0xea, 0xaa, 0xef, 0xeb, 0x2e, 0x1a, 0x76, 0x46,
+	0x33, 0x2e, 0xa2, 0x09, 0x26, 0x7f, 0xa7, 0x8b, 0x4e, 0x9c, 0x44, 0x22, 0x22, 0x1b, 0xa9, 0x1d,
+	0x7c, 0x74, 0xe0, 0xf7, 0x13, 0xc6, 0xc5, 0x91, 0x01, 0x38, 0xe9, 0x41, 0xad, 0x3b, 0x12, 0xec,
+	0x06, 0x33, 0xc8, 0x77, 0xda, 0xde, 0xfe, 0xe6, 0x41, 0xb3, 0x93, 0x65, 0x49, 0x5d, 0xc7, 0xb3,
+	0xf1, 0x78, 0x30, 0xbd, 0x8e, 0xc2, 0xc5, 0x2d, 0xe4, 0x18, 0xea, 0x3d, 0x1c, 0xa3, 0x40, 0x6a,
+	0xd3, 0xb8, 0xbf, 0x4c, 0xb3, 0xb4, 0x27, 0xf8, 0xe0, 0x41, 0x7d, 0x31, 0x8c, 0x54, 0xc1, 0x1d,
+	0x50, 0xdf, 0x69, 0x3b, 0xfb, 0x5e, 0xe8, 0x0e, 0x28, 0xd9, 0x83, 0xca, 0x31, 0x4b, 0xb8, 0x38,
+	0x1d, 0x4e, 0xd0, 0x77, 0xdb, 0xce, 0x7e, 0x25, 0xb4, 0x00, 0x69, 0xc2, 0xc6, 0xc9, 0xd0, 0x38,
+	0x3d, 0xe5, 0xcc, 0x6c, 0x52, 0x07, 0xef, 0x90, 0x45, 0x7e, 0x41, 0xc1, 0x72, 0x49, 0xfe, 0x07,
+	0xe8, 0x52, 0x8a, 0x09, 0x72, 0x8e, 0xdc, 0x2f, 0xaa, 0x92, 0x77, 0x6d, 0xc9, 0x5d, 0x4a, 0xa5,
+	0x2b, 0x44, 0x1e, 0x47, 0x53, 0x8e, 0x61, 0x2e, 0x98, 0x34, 0xa0, 0xf8, 0x7c, 0x32, 0x64, 0x63,
+	0xbf, 0xa4, 0xd2, 0x69, 0x83, 0xb4, 0x61, 0xf3, 0xec, 0x75, 0x34, 0xc5, 0xd3, 0xd9, 0xe4, 0x0a,
+	0x13, 0xbf, 0xac, 0x7c, 0x79, 0x48, 0x96, 0x7f, 0x94, 0xe0, 0x50, 0x20, 0xed, 0x0a, 0x7f, 0x43,
+	0x97, 0x9f, 0x01, 0xd2, 0x7b, 0x11, 0x53, 0xe3, 0xad, 0x68, 0x6f, 0x06, 0x48, 0xaf, 0xe1, 0xac,
+	0x2b, 0x7c, 0xd0, 0xde, 0x0c, 0x20, 0x7f, 0x41, 0xf1, 0x2c, 0xe2, 0x82, 0xfb, 0x9b, 0xaa, 0x8f,
+	0x6d, 0xdb, 0x87, 0x84, 0xb3, 0x26, 0x74, 0x10, 0xe9, 0x40, 0x39, 0xc4, 0x1b, 0x86, 0xef, 0xb8,
+	0xbf, 0xa5, 0xe2, 0x1b, 0x36, 0x5e, 0x3b, 0xe4, 0x4d, 0x09, 0xd3, 0xa0, 0x20, 0x02, 0xb0, 0xb0,
+	0x14, 0x85, 0x65, 0xa2, 0x30, 0x4a, 0x76, 0xa0, 0x1c, 0x47, 0x5c, 0x5c, 0x32, 0xaa, 0x24, 0xf1,
+	0xc2, 0x92, 0x34, 0x07, 0x54, 0x12, 0x42, 0x91, 0x8f, 0x12, 0x16, 0x0b, 0x16, 0x4d, 0x8d, 0x24,
+	0x79, 0x88, 0x6c, 0x43, 0x29, 0x51, 0x89, 0x95, 0x30, 0x6e, 0x68, 0xac, 0xe0, 0x8b, 0x03, 0x5b,
+	0xf9, 0xc2, 0x97, 0x2e, 0x02, 0x81, 0x42, 0xee, 0x0e, 0xa8, 0xb5, 0x3c, 0xae, 0xb7, 0x7c, 0x5c,
+	0x0e, 0x22, 0x1d, 0x28, 0xbe, 0x44, 0xca, 0x86, 0x7e, 0x41, 0x75, 0xed, 0xdb, 0xae, 0x15, 0x6c,
+	0xc5, 0xd6, 0x61, 0xf3, 0x7a, 0x15, 0xd7, 0xea, 0x55, 0x5a, 0xd0, 0x2b, 0xb8, 0x4c, 0x39, 0x93,
+	0x49, 0xf3, 0x1c, 0x39, 0xeb, 0x38, 0x72, 0xd7, 0x71, 0xe4, 0xe9, 0x9d, 0x86, 0xa3, 0xb2, 0xbc,
+	0x84, 0xb1, 0xb8, 0x0d, 0xf6, 0x00, 0xd2, 0x87, 0x33, 0xa0, 0x8b, 0xea, 0x04, 0x5f, 0x5d, 0x68,
+	0xa4, 0xee, 0xb4, 0x3f, 0x49, 0xed, 0xe3, 0xdb, 0xb2, 0x6f, 0xeb, 0x4f, 0x28, 0x48, 0x4a, 0x7c,
+	0x58, 0xfb, 0x78, 0x54, 0x4c, 0x40, 0xa1, 0x3a, 0x7f, 0x59, 0xa4, 0x40, 0x67, 0x4a, 0xcc, 0x54,
+	0x5a, 0x6d, 0xad, 0xbc, 0xa3, 0x04, 0x0a, 0x27, 0x6c, 0xfa, 0xc6, 0x50, 0xa8, 0xd6, 0x12, 0x7b,
+	0x75, 0x1b, 0xa3, 0xe1, 0x4f, 0xad, 0x83, 0xcf, 0xae, 0x9d, 0x86, 0x0f, 0x3e, 0x82, 0xc7, 0x69,
+	0xb8, 0x7a, 0x1a, 0x06, 0x4f, 0xa1, 0x6c, 0x0a, 0x96, 0x2c, 0xf4, 0x18, 0x17, 0x09, 0x1b, 0x09,
+	0xc5, 0x5c, 0x25, 0xcc, 0x6c, 0x29, 0xdc, 0xb9, 0x48, 0x10, 0x85, 0x21, 0xcf, 0x58, 0xc1, 0x05,
+	0xd4, 0x16, 0xfa, 0x5d, 0x9a, 0x79, 0xf9, 0xb4, 0xee, 0x83, 0x69, 0xbd, 0xb9, 0xb4, 0x77, 0x0e,
+	0xd4, 0xac, 0xa6, 0x6f, 0x67, 0xc8, 0x55, 0x1f, 0xd7, 0x52, 0xb1, 0xa9, 0x54, 0x49, 0xd7, 0x67,
+	0x01, 0x79, 0xca, 0x78, 0x68, 0x9c, 0xe6, 0x94, 0xd4, 0x96, 0x12, 0x5e, 0xb1, 0xc8, 0x1c, 0x21,
+	0x97, 0xe4, 0x1f, 0x80, 0xa1, 0x95, 0x50, 0x8f, 0xb8, 0x3f, 0x96, 0x25, 0xcc, 0x05, 0x49, 0xe9,
+	0x50, 0x49, 0xa7, 0x87, 0x9b, 0x36, 0xa4, 0x74, 0xb1, 0xd4, 0x69, 0xaa, 0xa5, 0xd3, 0xb2, 0xe6,
+	0xa1, 0x83, 0x4f, 0x9e, 0x6d, 0xe5, 0x1c, 0x93, 0x1b, 0x36, 0x42, 0xd2, 0x87, 0xaa, 0x56, 0x2f,
+	0x75, 0x90, 0xdd, 0xe5, 0x0f, 0x80, 0xe9, 0xbb, 0xd9, 0x5c, 0xe5, 0x32, 0x5c, 0x3f, 0x83, 0x72,
+	0x1f, 0xc5, 0xe1, 0xed, 0x80, 0x92, 0xc6, 0x72, 0xd8, 0x80, 0x36, 0x5b, 0x0f, 0x6f, 0x56, 0x93,
+	0xed, 0x09, 0xd4, 0xfb, 0x28, 0xe6, 0x3f, 0x3b, 0x35, 0xbb, 0x47, 0x4d, 0xcd, 0xe6, 0x8e, 0x05,
+	0xe6, 0x23, 0xff, 0x83, 0xaa, 0xbe, 0x49, 0x59, 0x1f, 0xab, 0xab, 0x58, 0xcc, 0x48, 0x5e, 0x40,
+	0x55, 0x5f, 0xd0, 0x6c, 0xe3, 0x9a, 0x2e, 0xd7, 0x32, 0x70, 0x04, 0xb5, 0x3e, 0x66, 0x25, 0xa9,
+	0x9f, 0xd0, 0xea, 0x1a, 0xd6, 0x24, 0x39, 0xac, 0xdf, 0xdd, 0xb7, 0x9c, 0x6f, 0xf7, 0x2d, 0xe7,
+	0xfb, 0x7d, 0xcb, 0x79, 0xff, 0xa3, 0xf5, 0xdb, 0x55, 0x49, 0xfd, 0x09, 0xff, 0xfd, 0x19, 0x00,
+	0x00, 0xff, 0xff, 0xac, 0xdd, 0xf1, 0x34, 0x2e, 0x0a, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1393,6 +1449,20 @@ func (m *CustomerFullInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
+	if len(m.Reviews) > 0 {
+		for iNdEx := len(m.Reviews) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Reviews[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCustomer(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x62
+		}
+	}
 	if len(m.Posts) > 0 {
 		for iNdEx := len(m.Posts) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -1404,7 +1474,7 @@ func (m *CustomerFullInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintCustomer(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x62
+			dAtA[i] = 0x5a
 		}
 	}
 	if len(m.DeletedAt) > 0 {
@@ -1412,49 +1482,35 @@ func (m *CustomerFullInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.DeletedAt)
 		i = encodeVarintCustomer(dAtA, i, uint64(len(m.DeletedAt)))
 		i--
-		dAtA[i] = 0x5a
+		dAtA[i] = 0x52
 	}
 	if len(m.UpdatedAt) > 0 {
 		i -= len(m.UpdatedAt)
 		copy(dAtA[i:], m.UpdatedAt)
 		i = encodeVarintCustomer(dAtA, i, uint64(len(m.UpdatedAt)))
 		i--
-		dAtA[i] = 0x52
+		dAtA[i] = 0x4a
 	}
 	if len(m.CreatedAt) > 0 {
 		i -= len(m.CreatedAt)
 		copy(dAtA[i:], m.CreatedAt)
 		i = encodeVarintCustomer(dAtA, i, uint64(len(m.CreatedAt)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x42
 	}
 	if len(m.PhoneNumber) > 0 {
 		i -= len(m.PhoneNumber)
 		copy(dAtA[i:], m.PhoneNumber)
 		i = encodeVarintCustomer(dAtA, i, uint64(len(m.PhoneNumber)))
 		i--
-		dAtA[i] = 0x42
+		dAtA[i] = 0x3a
 	}
 	if len(m.Email) > 0 {
 		i -= len(m.Email)
 		copy(dAtA[i:], m.Email)
 		i = encodeVarintCustomer(dAtA, i, uint64(len(m.Email)))
 		i--
-		dAtA[i] = 0x3a
-	}
-	if len(m.Review) > 0 {
-		for iNdEx := len(m.Review) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Review[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCustomer(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x32
-		}
+		dAtA[i] = 0x32
 	}
 	if len(m.Adderesses) > 0 {
 		for iNdEx := len(m.Adderesses) - 1; iNdEx >= 0; iNdEx-- {
@@ -1499,6 +1555,56 @@ func (m *CustomerFullInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *ReviewList) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ReviewList) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ReviewList) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.Review != 0 {
+		i -= 4
+		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Review))))
+		i--
+		dAtA[i] = 0x25
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintCustomer(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.PostId != 0 {
+		i = encodeVarintCustomer(dAtA, i, uint64(m.PostId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Id != 0 {
+		i = encodeVarintCustomer(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *PostResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1522,13 +1628,6 @@ func (m *PostResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.DeleteAt) > 0 {
-		i -= len(m.DeleteAt)
-		copy(dAtA[i:], m.DeleteAt)
-		i = encodeVarintCustomer(dAtA, i, uint64(len(m.DeleteAt)))
-		i--
-		dAtA[i] = 0x3a
 	}
 	if len(m.UpdatedAt) > 0 {
 		i -= len(m.UpdatedAt)
@@ -1706,13 +1805,6 @@ func (m *CustomerResponsePost) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.DeleteAt) > 0 {
-		i -= len(m.DeleteAt)
-		copy(dAtA[i:], m.DeleteAt)
-		i = encodeVarintCustomer(dAtA, i, uint64(len(m.DeleteAt)))
-		i--
-		dAtA[i] = 0x5a
 	}
 	if len(m.Post) > 0 {
 		for iNdEx := len(m.Post) - 1; iNdEx >= 0; iNdEx-- {
@@ -2179,12 +2271,6 @@ func (m *CustomerFullInfo) Size() (n int) {
 			n += 1 + l + sovCustomer(uint64(l))
 		}
 	}
-	if len(m.Review) > 0 {
-		for _, e := range m.Review {
-			l = e.Size()
-			n += 1 + l + sovCustomer(uint64(l))
-		}
-	}
 	l = len(m.Email)
 	if l > 0 {
 		n += 1 + l + sovCustomer(uint64(l))
@@ -2210,6 +2296,37 @@ func (m *CustomerFullInfo) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovCustomer(uint64(l))
 		}
+	}
+	if len(m.Reviews) > 0 {
+		for _, e := range m.Reviews {
+			l = e.Size()
+			n += 1 + l + sovCustomer(uint64(l))
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *ReviewList) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovCustomer(uint64(m.Id))
+	}
+	if m.PostId != 0 {
+		n += 1 + sovCustomer(uint64(m.PostId))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovCustomer(uint64(l))
+	}
+	if m.Review != 0 {
+		n += 5
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -2245,10 +2362,6 @@ func (m *PostResponse) Size() (n int) {
 		n += 1 + l + sovCustomer(uint64(l))
 	}
 	l = len(m.UpdatedAt)
-	if l > 0 {
-		n += 1 + l + sovCustomer(uint64(l))
-	}
-	l = len(m.DeleteAt)
 	if l > 0 {
 		n += 1 + l + sovCustomer(uint64(l))
 	}
@@ -2355,10 +2468,6 @@ func (m *CustomerResponsePost) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovCustomer(uint64(l))
 		}
-	}
-	l = len(m.DeleteAt)
-	if l > 0 {
-		n += 1 + l + sovCustomer(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -2832,40 +2941,6 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Review", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCustomer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Review = append(m.Review, &ReviewResp{})
-			if err := m.Review[len(m.Review)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Email", wireType)
 			}
 			var stringLen uint64
@@ -2896,7 +2971,7 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.Email = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 8:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PhoneNumber", wireType)
 			}
@@ -2928,7 +3003,7 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.PhoneNumber = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 9:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -2960,7 +3035,7 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.CreatedAt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 10:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
 			}
@@ -2992,7 +3067,7 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.UpdatedAt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 11:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeletedAt", wireType)
 			}
@@ -3024,7 +3099,7 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.DeletedAt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 12:
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Posts", wireType)
 			}
@@ -3058,6 +3133,172 @@ func (m *CustomerFullInfo) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reviews", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCustomer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCustomer
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCustomer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reviews = append(m.Reviews, &ReviewList{})
+			if err := m.Reviews[len(m.Reviews)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCustomer(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCustomer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ReviewList) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCustomer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ReviewList: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ReviewList: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCustomer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostId", wireType)
+			}
+			m.PostId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCustomer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PostId |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCustomer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCustomer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCustomer
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 5 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Review", wireType)
+			}
+			var v uint32
+			if (iNdEx + 4) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
+			iNdEx += 4
+			m.Review = float32(math.Float32frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipCustomer(dAtA[iNdEx:])
@@ -3289,38 +3530,6 @@ func (m *PostResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.UpdatedAt = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeleteAt", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCustomer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DeleteAt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3925,38 +4134,6 @@ func (m *CustomerResponsePost) Unmarshal(dAtA []byte) error {
 			if err := m.Post[len(m.Post)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeleteAt", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCustomer
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCustomer
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DeleteAt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

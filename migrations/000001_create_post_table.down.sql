@@ -1,2 +1,2 @@
-DROP Table media;
-DROP Table post;
+DROP Table if EXISTS media;
+DROP Table if EXISTS post;
