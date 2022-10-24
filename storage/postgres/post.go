@@ -88,15 +88,16 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 		if err != nil {
 			return &pb.ListAllPostResponse{}, err
 		}
+		fmt.Println(postResp.Id)
 		for medias.Next() {
 			mediaResp := pb.MediasResponse{}
 			err = medias.Scan(&mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
 			if err != nil {
 				return &pb.ListAllPostResponse{}, err
 			}
-			postResp.Media = append(postResp.Media, &mediaResp)
 			mediaResp.PostId = postResp.Id
-
+			postResp.Media = append(postResp.Media, &mediaResp)
+			fmt.Println(mediaResp)
 		}
 		if val, ok := deletedPost[int(postResp.Id)]; ok {
 			postResp.DeleteAt = val
@@ -123,6 +124,24 @@ func (r *postRepo) GetPostCustomerId(req *pb.CustomerId) (*pb.ListPostCustomer, 
 		err = rows.Scan(&postResp.Id, &postResp.CustomerId, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt)
 		if err != nil {
 			return &pb.ListPostCustomer{}, err
+		}
+		medias, err := r.db.Query(
+			`select post_id,name,link,type from media where post_id=$1`, postResp.Id,
+		)
+		if err != nil {
+			return &pb.ListPostCustomer{}, err
+		}
+		for medias.Next() {
+			mediasResp := pb.MediasResponse{}
+			err = medias.Scan(&mediasResp.PostId,
+				&mediasResp.Name,
+				&mediasResp.Link,
+				&mediasResp.Type)
+			if err != nil {
+				return &pb.ListPostCustomer{}, err
+			}
+			postResp.Media = append(postResp.Media, &mediasResp)
+
 		}
 		posts = append(posts, &postResp)
 	}
