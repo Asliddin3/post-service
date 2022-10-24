@@ -18,23 +18,23 @@ func NewPostRepo(db *sqlx.DB) *postRepo {
 
 func (r *postRepo) GetPost(req *pb.PostId) (*pb.PostResponseCustomer, error) {
 	postResp := pb.PostResponseCustomer{}
-	fmt.Println(req.Id)
+
 	err := r.db.QueryRow(
 		`select id,customer_id,name,description,created_at,updated_at from post where id=$1 and deleted_at is null;`, req.Id,
 	).Scan(&postResp.Id, &postResp.CustomerId, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt)
-	fmt.Println(postResp)
+
 	if err != nil {
 		return &pb.PostResponseCustomer{}, err
 	}
 	rows, err := r.db.Query(
-		`select post_id,name,link,type from media where post_id=$1`, req.Id,
+		`select id,name,link,type from media where post_id=$1`, req.Id,
 	)
 	if err != nil {
 		return &pb.PostResponseCustomer{}, err
 	}
 	for rows.Next() {
 		medResp := pb.MediasResponse{}
-		err = rows.Scan(&medResp.PostId, &medResp.Name, &medResp.Link, &medResp.Type)
+		err = rows.Scan(&medResp.Id, &medResp.Name, &medResp.Link, &medResp.Type)
 		if err != nil {
 			return &pb.PostResponseCustomer{}, err
 		}
@@ -83,7 +83,7 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 			return &pb.ListAllPostResponse{}, err
 		}
 		medias, err := r.db.Query(`
-		select name,link,type from media where post_id=$1
+		select id,name,link,type from media where post_id=$1
 		`, postResp.Id)
 		if err != nil {
 			return &pb.ListAllPostResponse{}, err
@@ -91,11 +91,11 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 		fmt.Println(postResp.Id)
 		for medias.Next() {
 			mediaResp := pb.MediasResponse{}
-			err = medias.Scan(&mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
+			err = medias.Scan(&mediaResp.Id, &mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
 			if err != nil {
 				return &pb.ListAllPostResponse{}, err
 			}
-			mediaResp.PostId = postResp.Id
+
 			postResp.Media = append(postResp.Media, &mediaResp)
 			fmt.Println(mediaResp)
 		}
@@ -114,7 +114,7 @@ func (r *postRepo) GetListPosts(req *pb.Empty) (*pb.ListAllPostResponse, error) 
 func (r *postRepo) GetPostCustomerId(req *pb.CustomerId) (*pb.ListPostCustomer, error) {
 	posts := []*pb.PostReviewResponse{}
 	rows, err := r.db.Query(`
-	 select id,customer_id,name,description,created_at,updated_at from post  where customer_id=$1
+	 select id,customer_id,name,description,created_at,updated_at from post  where customer_id=$1 and deleted_at is null
 	`, req.Id)
 	if err != nil {
 		return &pb.ListPostCustomer{}, err
@@ -126,14 +126,14 @@ func (r *postRepo) GetPostCustomerId(req *pb.CustomerId) (*pb.ListPostCustomer, 
 			return &pb.ListPostCustomer{}, err
 		}
 		medias, err := r.db.Query(
-			`select post_id,name,link,type from media where post_id=$1`, postResp.Id,
+			`select id,name,link,type from media where post_id=$1`, postResp.Id,
 		)
 		if err != nil {
 			return &pb.ListPostCustomer{}, err
 		}
 		for medias.Next() {
 			mediasResp := pb.MediasResponse{}
-			err = medias.Scan(&mediasResp.PostId,
+			err = medias.Scan(&mediasResp.Id,
 				&mediasResp.Name,
 				&mediasResp.Link,
 				&mediasResp.Type)
@@ -165,9 +165,9 @@ func (r *postRepo) CreatePost(req *pb.PostRequest) (*pb.PostResponse, error) {
 		err = r.db.QueryRow(`
 			insert into media(post_id,name,link,type)
 			values($1,$2,$3,$4)
-			returning post_id,name,link,type
+			returning id,name,link,type
 		`, postResp.Id, media.Name, media.Link, media.Type,
-		).Scan(&mediaResp.PostId, &mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
+		).Scan(&mediaResp.Id, &mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
 		if err != nil {
 			return &pb.PostResponse{}, err
 		}
@@ -179,7 +179,7 @@ func (r *postRepo) CreatePost(req *pb.PostRequest) (*pb.PostResponse, error) {
 func (r *postRepo) UpdatePost(req *pb.PostResponse) (*pb.PostResponse, error) {
 	postResp := pb.PostResponse{}
 	err := r.db.QueryRow(`
-	update post set name=$1,description=$2,updated_at=current_timestamp where id=$3
+	update post set name=$1,description=$2,updated_at=current_timestamp where id=$3 and deleted_at is null
 	returning id,name,description,created_at,updated_at
 	`, req.Name, req.Description, req.Id).Scan(
 		&postResp.Id, &postResp.Name, &postResp.Description, &postResp.CreatedAt, &postResp.UpdatedAt,
@@ -197,8 +197,8 @@ func (r *postRepo) UpdatePost(req *pb.PostResponse) (*pb.PostResponse, error) {
 		mediaResp := pb.MediasResponse{}
 		err = r.db.QueryRow(`
 		insert into media (post_id,name,link,type) values($1,$2,$3,$4)
-		returning post_id,name,link,type
-		`, req.Id, media.Name, media.Link, media.Type).Scan(&mediaResp.PostId,
+		returning id,name,link,type
+		`, req.Id, media.Name, media.Link, media.Type).Scan(&mediaResp.Id,
 			&mediaResp.Name, &mediaResp.Link, &mediaResp.Type)
 		if err != nil {
 			return &pb.PostResponse{}, err
