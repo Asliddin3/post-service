@@ -8,7 +8,7 @@ type PostStorageI interface {
 	// CheckField(*pb.CheckFieldRequest) (*pb.CheckFieldResponse,error)
 	CreatePost(*pb.PostRequest) (*pb.PostResponse, error)
 	DeletePost(*pb.PostId) (*pb.Empty, error)
-	UpdatePost(*pb.PostResponse) (*pb.PostResponse, error)
+	UpdatePost(*pb.PostUpdate) (*pb.PostResponse, error)
 	GetPost(*pb.PostId) (*pb.PostResponseCustomer, error)
 	GetPostCustomerId(*pb.CustomerId) (*pb.ListPostCustomer, error)
 	GetListPosts(*pb.Empty) (*pb.ListAllPostResponse, error)

@@ -122,7 +122,7 @@ func (s *PostService) DeletePostByCustomerId(ctx context.Context, req *pb.Custom
 	fmt.Println(err)
 	for _, id := range arrReview.ReviewsIds {
 		fmt.Println(id)
-		_, err = s.client.ReviewService().DeleteReview(context.Background(), &review.PostId{Id: id.Id})
+		_, err = s.client.ReviewService().DeleteReview(context.Background(), &review.ReviewId{Id: id.Id})
 		if err != nil {
 			return &pb.DeletedReview{}, err
 		}
@@ -137,14 +137,14 @@ func (s *PostService) DeletePost(ctx context.Context, req *pb.PostId) (*pb.Empty
 		return &pb.Empty{}, status.Error(codes.Internal, "something went wrong ")
 	}
 	fmt.Println("error in delet post", err)
-	_, err = s.client.ReviewService().DeleteReview(context.Background(), &review.PostId{Id: req.Id})
+	_, err = s.client.ReviewService().DeleteReview(context.Background(), &review.ReviewId{Id: req.Id})
 	if err != nil {
 		return &pb.Empty{}, err
 	}
 	return post, nil
 }
 
-func (s *PostService) UpdatePost(ctx context.Context, req *pb.PostResponse) (*pb.PostResponse, error) {
+func (s *PostService) UpdatePost(ctx context.Context, req *pb.PostUpdate) (*pb.PostResponse, error) {
 	post, err := s.storage.Post().UpdatePost(req)
 	if err != nil {
 		s.logger.Error("error while updating post", l.Any("error updating", err))
@@ -164,9 +164,10 @@ func (s *PostService) GetPost(ctc context.Context, req *pb.PostId) (*pb.PostResp
 		s.logger.Error("error while getting customer", l.Any("error getting customer", err))
 		return &pb.PostResponseCustomer{}, status.Error(codes.Internal, "error getting customer")
 	}
-	post.Firstname = customerInfo.FirstName
-	post.Lastname = customerInfo.LastName
+	post.FirstName = customerInfo.FirstName
+	post.LastName = customerInfo.LastName
 	post.Email = customerInfo.Email
+	post.Bio = customerInfo.Bio
 	post.Phonenumber = customerInfo.PhoneNumber
 	for _, address := range customerInfo.Adderesses {
 		post.Adderesses = append(post.Adderesses, &pb.AddressResponse{
@@ -175,5 +176,20 @@ func (s *PostService) GetPost(ctc context.Context, req *pb.PostId) (*pb.PostResp
 			Street:   address.Street,
 		})
 	}
+	reviews, err := s.client.ReviewService().GetPostReviews(context.Background(), &review.PostId{Id: post.Id})
+	if err != nil {
+		return &pb.PostResponseCustomer{}, err
+	}
+	for _, review := range reviews.Reviews {
+		post.Reviews = append(post.Reviews, &pb.ReviewRespList{
+			Id:          review.Id,
+			CustomerId:  review.CustomerId,
+			Description: review.Description,
+			FirstName:   review.FirstName,
+			LastName:    review.LastName,
+			Review:      review.Review,
+		})
+	}
+
 	return post, nil
 }

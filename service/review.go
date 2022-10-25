@@ -17,16 +17,9 @@ type ReviewService struct {
 	logger l.Logger
 }
 
-// func (r *ReviewService) CreateReview(ctx context.Context, req *pb.Review) (*pb.Review, error) {
-// 	reviewResp, err := r.client.ReviewService().CreateReview(context.Background(), req)
-// 	if err != nil {
-// 		r.logger.Error("error while creating review", logger.Any("creating review argument error", err))
-// 		return &pb.Review{}, status.Error(codes.Internal, "Please check your argument")
-// 	}
-// 	return reviewResp, nil
-// }
 
-func (r *ReviewService) DeleteReview(ctx context.Context, req *pb.PostId) (*pb.Empty, error) {
+
+func (r *ReviewService) DeleteReview(ctx context.Context, req *pb.ReviewId) (*pb.Empty, error) {
 	_, err := r.client.ReviewService().DeleteReview(context.Background(), req)
 	if err != nil {
 		r.logger.Error("error deleting review", logger.Any("error getting post review", err))

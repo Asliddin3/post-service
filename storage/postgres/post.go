@@ -176,7 +176,7 @@ func (r *postRepo) CreatePost(req *pb.PostRequest) (*pb.PostResponse, error) {
 	return &postResp, nil
 }
 
-func (r *postRepo) UpdatePost(req *pb.PostResponse) (*pb.PostResponse, error) {
+func (r *postRepo) UpdatePost(req *pb.PostUpdate) (*pb.PostResponse, error) {
 	postResp := pb.PostResponse{}
 	err := r.db.QueryRow(`
 	update post set name=$1,description=$2,updated_at=current_timestamp where id=$3 and deleted_at is null
