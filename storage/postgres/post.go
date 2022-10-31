@@ -237,3 +237,93 @@ func (r *postRepo) DeletePostByCustomerId(req *pb.CustomerId) (*pb.DeletedReview
 	}
 	return &arr, nil
 }
+
+func (r *postRepo) ListPost(limit int64, page int64) (*pb.ListPostResp, error) {
+	offset := (page - 1) * limit
+	listPost := pb.ListPostResp{}
+	rows, err := r.db.Query(`
+	select id,customer_id,name,description ,created_at,updated_at
+	from post LIMIT $1 OFFSET $2
+	`, limit, offset)
+	for rows.Next() {
+		post := pb.PostResponse{}
+		err = rows.Scan(&post.Id, &post.CustomerId,
+			&post.Name, &post.Description, &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			return &pb.ListPostResp{}, err
+		}
+		media, err := r.db.Query(`
+		select id,name,link,type from media where post_id =$1
+		`, post.Id)
+		if err != nil {
+			return &pb.ListPostResp{}, err
+		}
+		for media.Next() {
+			mediaResp := pb.MediasResponse{}
+			err = media.Scan(&mediaResp.Id, &mediaResp.Name,
+				&mediaResp.Link, &mediaResp.Type)
+			if err != nil {
+				return &pb.ListPostResp{}, err
+			}
+			post.Media = append(post.Media, &mediaResp)
+		}
+		listPost.Posts = append(listPost.Posts, &post)
+	}
+	return &listPost, nil
+}
+
+func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchResponse, error) {
+	searchby := ""
+	for i, keyval := range req.Parametrs {
+		fmt.Println(keyval)
+		res := fmt.Sprintf(" %s ilike any(array['%s' ,'%s' , '%s' ])", keyval.Key, "%"+keyval.Value+"%", keyval.Value+"%", "%"+keyval.Value)
+		if i != len(req.Parametrs)-1 {
+			res += " and "
+		}
+		searchby += res
+	}
+	offset := (req.Page - 1) * req.Limit
+
+	if req.OrderBy != "" {
+		searchby = searchby + fmt.Sprintf(" order by %s", req.OrderBy)
+	}
+
+	searchby = searchby + fmt.Sprintf(" limit %d offset %d", req.Limit, offset)
+	fmt.Println(searchby)
+
+	rows, err := r.db.Query("select id,customer_id, name ,description from post where deleted_at is null and " + searchby)
+	fmt.Println(err)
+
+	if err != nil {
+		return &pb.SearchResponse{}, err
+	}
+	postList := pb.SearchResponse{}
+	for rows.Next() {
+		post := pb.PostInfo{}
+		err = rows.Scan(&post.Id, &post.CustomerId,
+			&post.Description, &post.Name)
+		if err != nil {
+			return &pb.SearchResponse{}, err
+		}
+		media, err := r.db.Query(`
+		select id,name,link,type from media where post_id=$1
+		`, post.Id)
+		fmt.Println(err)
+		if err != nil {
+			return &pb.SearchResponse{}, err
+		}
+		for media.Next() {
+			mediaResp := pb.MediasResponse{}
+			err = media.Scan(&mediaResp.Id, &mediaResp.Name,
+				&mediaResp.Link, &mediaResp.Type)
+			if err != nil {
+				return &pb.SearchResponse{}, err
+			}
+			post.Media = append(post.Media, &mediaResp)
+		}
+		postList.Posts = append(postList.Posts, &post)
+
+	}
+
+	return &postList, nil
+}

@@ -5,7 +5,6 @@ import (
 )
 
 type PostStorageI interface {
-	// CheckField(*pb.CheckFieldRequest) (*pb.CheckFieldResponse,error)
 	CreatePost(*pb.PostRequest) (*pb.PostResponse, error)
 	DeletePost(*pb.PostId) (*pb.Empty, error)
 	UpdatePost(*pb.PostUpdate) (*pb.PostResponse, error)
@@ -13,4 +12,6 @@ type PostStorageI interface {
 	GetPostCustomerId(*pb.CustomerId) (*pb.ListPostCustomer, error)
 	GetListPosts(*pb.Empty) (*pb.ListAllPostResponse, error)
 	DeletePostByCustomerId(*pb.CustomerId) (*pb.DeletedReview, error)
+	ListPost(limit int64, page int64) (*pb.ListPostResp, error)
+	SearchOrderedPagePost(*pb.SearchRequest) (*pb.SearchResponse, error)
 }

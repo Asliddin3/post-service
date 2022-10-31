@@ -193,3 +193,21 @@ func (s *PostService) GetPost(ctc context.Context, req *pb.PostId) (*pb.PostResp
 
 	return post, nil
 }
+
+func (s *PostService) ListPost(ctx context.Context, req *pb.ListPostReq) (*pb.ListPostResp, error) {
+	posts, err := s.storage.Post().ListPost(req.Limit, req.Page)
+	if err != nil {
+		s.logger.Error("error while gettin list of post", l.Any("error it getting post", err))
+		return &pb.ListPostResp{}, status.Error(codes.InvalidArgument, "something went wrong")
+	}
+	return posts, nil
+}
+
+func (s *PostService) SearchOrderedPagePost(ctx context.Context, req *pb.SearchRequest) (*pb.SearchResponse, error) {
+	posts, err := s.storage.Post().SearchOrderedPagePost(req)
+	if err != nil {
+		s.logger.Error("error searching post", l.Any("error serachring post by key", err))
+		return &pb.SearchResponse{}, status.Error(codes.InvalidArgument, "something went wrong")
+	}
+	return posts, nil
+}
