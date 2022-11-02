@@ -1,6 +1,6 @@
 CREATE Table if not exists post(
   id serial PRIMARY KEY,
-  customer_id int,
+  customer_id UUID,
   name VARCHAR(200),
   description TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

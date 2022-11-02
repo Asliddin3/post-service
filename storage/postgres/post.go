@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"strings"
 
 	pb "github.com/Asliddin3/post-servise/genproto/post"
 
@@ -205,7 +206,7 @@ func (r *postRepo) UpdatePost(req *pb.PostUpdate) (*pb.PostResponse, error) {
 		}
 		postResp.Media = append(postResp.Media, &mediaResp)
 	}
-
+	postResp.CustomerId = req.CustomerId
 	return &postResp, nil
 }
 func (r *postRepo) DeletePost(req *pb.PostId) (*pb.Empty, error) {
@@ -285,7 +286,13 @@ func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchRespo
 	offset := (req.Page - 1) * req.Limit
 
 	if req.OrderBy != "" {
-		searchby = searchby + fmt.Sprintf(" order by %s", req.OrderBy)
+		if strings.Contains(req.OrderBy, ".") {
+			arr := strings.Split(req.OrderBy, ".")
+			searchby = searchby + fmt.Sprintf(" order by %s %s", arr[0], arr[1])
+		} else {
+			searchby = req.OrderBy
+		}
+		fmt.Println(searchby)
 	}
 
 	searchby = searchby + fmt.Sprintf(" limit %d offset %d", req.Limit, offset)
@@ -300,8 +307,8 @@ func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchRespo
 	postList := pb.SearchResponse{}
 	for rows.Next() {
 		post := pb.PostInfo{}
-		err = rows.Scan(&post.Id, &post.CustomerId,
-			&post.Description, &post.Name)
+		err = rows.Scan(&post.Id, &post.CustomerId, &post.Name,
+			&post.Description)
 		if err != nil {
 			return &pb.SearchResponse{}, err
 		}
