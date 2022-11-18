@@ -26,12 +26,12 @@ func New(cnfg config.Config) (*ServiceManager, error) {
 			cnfg.ReviewServiceHost, cnfg.ReviewServicePort)
 	}
 	connCustomer, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", cnfg.CustomerSericeHost, cnfg.CustomerSericePort),
+		fmt.Sprintf("%s:%d", cnfg.CustomerSerivceHost, cnfg.CustomerSerivcePort),
 		grpc.WithInsecure(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error while dial product service: host: %s and port: %d",
-			cnfg.CustomerSericeHost, cnfg.CustomerSericePort)
+			cnfg.CustomerSerivceHost, cnfg.CustomerSerivcePort)
 	}
 
 	serviceManager := &ServiceManager{

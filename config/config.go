@@ -16,21 +16,21 @@ type Config struct{
 	RPCPort string
 	ReviewServiceHost string
 	ReviewServicePort int
-	CustomerSericeHost string
-	CustomerSericePort int
+	CustomerSerivceHost string
+	CustomerSerivcePort int
 }
 func Load() Config{
 	c:=Config{}
 	c.Environment=cast.ToString(getOrReturnDefault("ENVIRONMENT","develop"))
-	c.PostgresHost=cast.ToString(getOrReturnDefault("POSTGRES_HOST","localhost"))
+	c.PostgresHost=cast.ToString(getOrReturnDefault("POSTGRES_HOST","database-1.c9lxq3r1itbt.us-east-1.rds.amazonaws.com"))
 	c.PostgresPort=cast.ToInt(getOrReturnDefault("POSTGRES_PORT",5432))
-	c.PostgresDatabase=cast.ToString(getOrReturnDefault("POSTGRES_DATABASE","postdb"))
+	c.PostgresDatabase=cast.ToString(getOrReturnDefault("POSTGRES_DB","post"))
 	c.PostgresUser=cast.ToString(getOrReturnDefault("POSTGRES_USER","postgres"))
-	c.PostgresPassword=cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD","compos1995"))
-	c.ReviewServiceHost=cast.ToString(getOrReturnDefault("REVIEW_SERVISE_HOST","localhost"))
-	c.ReviewServicePort=cast.ToInt(getOrReturnDefault("REVIEW_SERVISE_HOST",8840))
-	c.CustomerSericeHost=cast.ToString(getOrReturnDefault("CUSTOMER_SERVISE_HOST","localhost"))
-	c.CustomerSericePort=cast.ToInt(getOrReturnDefault("CUSTOMER_SERVISE_PORT",8810))
+	c.PostgresPassword=cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD","asliddin2001"))
+	c.ReviewServiceHost=cast.ToString(getOrReturnDefault("REVIEW_SERVISE_HOST","review-servise"))
+	c.ReviewServicePort=cast.ToInt(getOrReturnDefault("REVIEW_SERVISE_PORT",8840))
+	c.CustomerSerivceHost=cast.ToString(getOrReturnDefault("CUSTOMER_SERVISE_HOST","customer-servis"))
+	c.CustomerSerivcePort=cast.ToInt(getOrReturnDefault("CUSTOMER_SERVISE_PORT",8810))
 
 	c.LogLevel=cast.ToString(getOrReturnDefault("LOG_LEVEL","debug"))
 

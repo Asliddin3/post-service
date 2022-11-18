@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE Table if not exists post(
   id serial PRIMARY KEY,
   customer_id UUID,
