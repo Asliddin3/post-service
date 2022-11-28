@@ -19,6 +19,7 @@ type PostService struct {
 	storage storage.IStorage
 	client  *grpcclient.ServiceManager
 	logger  l.Logger
+	// consumer *kafka.Reader
 }
 
 func NewPostService(client *grpcclient.ServiceManager, db *sqlx.DB, log l.Logger) *PostService {
@@ -26,6 +27,7 @@ func NewPostService(client *grpcclient.ServiceManager, db *sqlx.DB, log l.Logger
 		storage: storage.NewStoragePg(db),
 		client:  client,
 		logger:  log,
+		// consumer: r,
 	}
 }
 func (r *PostService) GetListPosts(ctx context.Context, req *pb.Empty) (*pb.ListAllPostResponse, error) {
@@ -105,6 +107,18 @@ func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId)
 }
 
 func (s *PostService) CreatePost(ctx context.Context, req *pb.PostRequest) (*pb.PostResponse, error) {
+	// topic := "post"
+	// 	kafka.connectConsumer()
+	// worker, err := kafka.connectConsumer([]string{"localhost1:9092", "kafkahost1:9092"})
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// message, err := s.consumer.FetchMessage(ctx)
+	// err = json.Unmarshal(message.Value, req)
+	// if err != nil {
+	// 	s.logger.Error("error while getting from kafka")
+	// 	return nil, err
+	// }
 	Post, err := s.storage.Post().CreatePost(req)
 	if err != nil {
 		s.logger.Error("error while creating Post", l.Any("error creating Post", err))
