@@ -36,7 +36,7 @@ func Load() Config {
 	c.CustomerSerivceHost = cast.ToString(getOrReturnDefault("CUSTOMER_SERVISE_HOST", "customer-servis"))
 	c.CustomerSerivcePort = cast.ToInt(getOrReturnDefault("CUSTOMER_SERVISE_PORT", 8810))
 	c.KafkaHost=cast.ToString(getOrReturnDefault("KAFKA_HOST","kafka"))
-	c.KafkaPort=cast.ToInt(getOrReturnDefault("KAFKA_PORT",29092))
+	c.KafkaPort=cast.ToInt(getOrReturnDefault("KAFKA_PORT",9092))
 
 	c.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
 
