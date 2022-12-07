@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	pb "github.com/Asliddin3/post-servise/genproto/post"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -176,6 +175,16 @@ func (r *postRepo) CreatePost(req *pb.PostRequest) (*pb.PostResponse, error) {
 	}
 	return &postResp, nil
 }
+func (r *postRepo) CreateCustomer(req *pb.CustomerResponse) (*pb.CustomerResponse, error) {
+	_, err := r.db.Exec(`
+	insert into customer(id,firstname,lastname,bio)
+	values($1,$2,$3,$4)
+	`, req.Id, req.FirstName, req.LastName, req.Bio)
+	if err != nil {
+		return &pb.CustomerResponse{}, err
+	}
+	return req, nil
+}
 
 func (r *postRepo) UpdatePost(req *pb.PostUpdate) (*pb.PostResponse, error) {
 	postResp := pb.PostResponse{}
@@ -296,10 +305,8 @@ func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchRespo
 	}
 
 	searchby = searchby + fmt.Sprintf(" limit %d offset %d", req.Limit, offset)
-	fmt.Println(searchby)
 
 	rows, err := r.db.Query("select id,customer_id, name ,description from post where deleted_at is null and " + searchby)
-	fmt.Println(err)
 
 	if err != nil {
 		return &pb.SearchResponse{}, err
@@ -315,7 +322,6 @@ func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchRespo
 		media, err := r.db.Query(`
 		select id,name,link,type from media where post_id=$1
 		`, post.Id)
-		fmt.Println(err)
 		if err != nil {
 			return &pb.SearchResponse{}, err
 		}
@@ -331,6 +337,7 @@ func (r *postRepo) SearchOrderedPagePost(req *pb.SearchRequest) (*pb.SearchRespo
 		postList.Posts = append(postList.Posts, &post)
 
 	}
+	fmt.Println("eror in post",postList)
 
 	return &postList, nil
 }

@@ -14,4 +14,5 @@ type PostStorageI interface {
 	DeletePostByCustomerId(*pb.CustomerId) (*pb.DeletedReview, error)
 	ListPost(limit int64, page int64) (*pb.ListPostResp, error)
 	SearchOrderedPagePost(*pb.SearchRequest) (*pb.SearchResponse, error)
+	CreateCustomer(*pb.CustomerResponse)(*pb.CustomerResponse,error)
 }

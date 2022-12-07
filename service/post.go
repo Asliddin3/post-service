@@ -106,6 +106,15 @@ func (r *PostService) GetPostCustomerId(ctx context.Context, req *pb.CustomerId)
 	return customerPosts, nil
 }
 
+func (s *PostService) CreateCustomer(ctx context.Context, req *pb.CustomerResponse) (*pb.CustomerResponse, error) {
+	post, err := s.storage.Post().CreateCustomer(req)
+	if err != nil {
+		s.logger.Error("error while creating customer int post", l.Any("error creating customer", err))
+		return &pb.CustomerResponse{}, status.Error(codes.Internal, fmt.Sprintf("error creating customer %s", err))
+	}
+	return post, nil
+}
+
 func (s *PostService) CreatePost(ctx context.Context, req *pb.PostRequest) (*pb.PostResponse, error) {
 	// topic := "post"
 	// 	kafka.connectConsumer()
@@ -219,6 +228,7 @@ func (s *PostService) ListPost(ctx context.Context, req *pb.ListPostReq) (*pb.Li
 
 func (s *PostService) SearchOrderedPagePost(ctx context.Context, req *pb.SearchRequest) (*pb.SearchResponse, error) {
 	posts, err := s.storage.Post().SearchOrderedPagePost(req)
+	fmt.Println(posts, err)
 	if err != nil {
 		s.logger.Error("error searching post", l.Any("error serachring post by key", err))
 		return &pb.SearchResponse{}, status.Error(codes.InvalidArgument, "something went wrong")
